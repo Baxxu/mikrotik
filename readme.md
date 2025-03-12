@@ -9,3 +9,6 @@
 Положи файлы config.rsc и video.rsc в микротик и выполни в нём команду.
 
 /import file-name=config.rsc verbose=yes
+
+# WiFi
+Не забудь поставить страну в Quick Setup
