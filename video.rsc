@@ -1,6 +1,3 @@
-# Добавляет IP адреса в список video, чтобы потом в firewall -> mangle можно было применять прявила к этому списку адресов.
-# В списке video хранятся адреса, которым нужно повышать приоритеть пакетов до 24, чтобы они попадали в video очередь cake queue.
-
 :global AddIpFunc do={
     :local IpVar [/ip dns cache get $i data];
 
