@@ -4,10 +4,10 @@
     :if ($IpVar = "0.0.0.0" or $IpVar = "" or $IpVar = 0.0.0.0) do={
         :return false;
     }
+	
+    :local DnsNameVar [/ip dns cache get $i name];
 
     :onerror err in={
-        :local DnsNameVar [/ip dns cache get $i name];
-
         /ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
 
         #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=$DnsTypeVar");
@@ -25,9 +25,9 @@
         :return false;
     }
 
-    :onerror err in={
-        :local DnsNameVar [/ip dns cache get $i name];
+    :local DnsNameVar [/ip dns cache get $i name];
 
+    :onerror err in={
         /ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
 
         #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=$DnsTypeVar");
