@@ -1,9 +1,5 @@
 :global AddIpv4Func do={
     :local IpVar [/ip dns cache get $i data];
-
-    :if ($IpVar = "" or $IpVar = nil or $IpVar = "0.0.0.0" or $IpVar = 0.0.0.0) do={
-        :return false;
-    }
 	
     :local DnsNameVar [/ip dns cache get $i name];
 
@@ -20,10 +16,6 @@
 
 :global AddIpv6Func do={
     :local IpVar [/ip dns cache get $i data];
-
-    :if ($IpVar = "" or $IpVar = nil) do={
-        :return false;
-    }
 
     :local DnsNameVar [/ip dns cache get $i name];
 
