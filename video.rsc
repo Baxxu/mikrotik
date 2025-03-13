@@ -1,39 +1,47 @@
-:global AddIpFunc do={
+:global AddIpv4Func do={
     :local IpVar [/ip dns cache get $i data];
 
-    :if ($IpVar = "0.0.0.0" or $IpVar = "" or $IpVar = 0.0.0.0) do={
+    :if ($IpVar = "" or $IpVar = nil or $IpVar = "0.0.0.0" or $IpVar = 0.0.0.0) do={
         :return false;
     }
-
-    :local DnsTypeVar [/ip dns cache get $i type];
-
+	
     :local DnsNameVar [/ip dns cache get $i name];
 
-    :if ($DnsTypeVar = "A") do={
-        :onerror err in={
-            /ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
+    :onerror err in={
+        /ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
 
-            #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=$DnsTypeVar");
+        #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=A");
 
-            :return true;
-            } do={
-                :return false;
-            }
-    }
-
-    :if ($DnsTypeVar = "AAAA") do={
-        :onerror err in={
-            /ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
-
-            #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=$DnsTypeVar");
-
-            :return true;
-            } do={
-                :return false;
-            }
+        :return true;
+    } do={
+        :return false;
     }
 }
 
-:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and (type="A" or type="AAAA"))] do={
-    $AddIpFunc i=$i;
+:global AddIpv6Func do={
+    :local IpVar [/ip dns cache get $i data];
+
+    :if ($IpVar = "" or $IpVar = nil) do={
+        :return false;
+    }
+
+    :local DnsNameVar [/ip dns cache get $i name];
+
+    :onerror err in={
+        /ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
+
+        #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=AAAA");
+
+        :return true;
+    } do={
+        :return false;
+    }
+}
+
+:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="A")] do={
+    $AddIpv4Func i=$i;
+}
+
+:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="AAAA")] do={
+    $AddIpv6Func i=$i;
 }
