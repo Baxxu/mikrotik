@@ -1,5 +1,5 @@
 # Скрипты и конфиги для MikroTik роутера
-Жми Quick Set.
+Жми Quick Set. Поставь одинаковое название wifi сетей и выбери страну.
 
 # video.rsc
 Добавляет IP адреса в список video, чтобы потом в firewall -> mangle можно было применять прявила к этому списку адресов.
@@ -10,6 +10,3 @@
 Положи файлы setup.rsc и video.rsc в микротик и выполни в нём команду.
 
 /import file-name=setup.rsc verbose=yes
-
-# WiFi
-Не забудь поставить страну в Quick Setup
