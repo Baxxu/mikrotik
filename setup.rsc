@@ -1,6 +1,6 @@
 /interface wifi set [ find default-name=wifi2 ] channel.band=2ghz-ax .reselect-interval=1h..2h .width=20mhz configuration.tx-power=1 security.authentication-types=wpa3-psk .wps=disable;
 
-/interface wifi set [ find default-name=wifi1 ] channel.band=5ghz-ax .reselect-interval=1h..2h .width=20/40/80mhz configuration.tx-power=1 security.authentication-types=wpa3-psk .wps=disable;
+/interface wifi set [ find default-name=wifi1 ] channel.band=5ghz-ax .reselect-interval=1h..2h .width=20/40/80mhz configuration.tx-power=10 security.authentication-types=wpa3-psk .wps=disable;
 
 /ip service disable api,api-ssl,ftp,ssh,telnet,www,www-ssl;
 
