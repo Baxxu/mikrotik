@@ -59,7 +59,7 @@
 	#	#:log info "$IpVar $DnsNameVar";
 	#	
 	#	:onerror err in={
-	#		/ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
+	#		/ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
 	#
 	#		#:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=AAAA");
 	#
