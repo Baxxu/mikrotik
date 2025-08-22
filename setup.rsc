@@ -22,9 +22,9 @@
 
 /queue tree add max-limit=40M name=queue-upload packet-mark=no-mark parent=ether1 queue=cake-upload;
 
-/queue type add kind=cake name=cake-download-simple cake-diffserv=besteffort cake-flowmode=dsthost;
+/queue type add kind=cake name=cake-download-simple cake-diffserv=besteffort cake-flowmode=hosts;
 
-/queue type add kind=cake name=cake-upload-simple cake-diffserv=besteffort cake-flowmode=srchost;
+/queue type add kind=cake name=cake-upload-simple cake-diffserv=besteffort cake-flowmode=hosts;
 
 /ip firewall filter set [ find comment="defconf: fasttrack" ] connection-mark=!notFastTrack;
 
