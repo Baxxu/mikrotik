@@ -16,7 +16,7 @@
 
 /queue type add kind=cake name=cake-download cake-overhead-scheme=ethernet,pppoe-ptm cake-diffserv=diffserv4;
 
-/queue type add kind=cake name=cake-upload cake-overhead-scheme=ethernet,pppoe-ptm cake-diffserv=besteffort cake-nat=yes;
+/queue type add kind=cake name=cake-upload cake-overhead-scheme=ethernet,pppoe-ptm cake-diffserv=besteffort;
 
 /queue tree add max-limit=54M name=queue-download packet-mark=no-mark parent=bridge queue=cake-download;
 
