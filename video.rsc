@@ -74,9 +74,9 @@
 }
 
 #IPv6
-#:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="AAAA")] do={
-#    $AddIpv6Func i=$i;
-#}
+:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="AAAA")] do={
+    $AddIpv6Func i=$i;
+}
 
 #CNAME to IPv4 and IPv6
 :foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="CNAME")] do={
@@ -86,5 +86,5 @@
 	
 	$ResolveCNAMEtoAFunc i=$IpVar
 	
-	#$ResolveCNAMEtoAAAAFunc i=$IpVar
+	$ResolveCNAMEtoAAAAFunc i=$IpVar
 }
