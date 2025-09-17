@@ -31,8 +31,8 @@
 }
 
 :global ResolveCNAMEtoAFunc do={
-	:onerror err in={
-		:foreach ii in=[/ip dns cache find where (name~$i and type="A")] do={
+	:foreach ii in=[/ip dns cache find where (name~$i and type="A")] do={
+		:onerror err in={
 			:local IpVar [/ip dns cache get $ii data];
 			:local DnsNameVar [/ip dns cache get $ii name];
 			
@@ -43,15 +43,15 @@
 			#:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=A");
 	
 			:return true;
+		} do={
+			:return false;
 		}
-	} do={
-		:return false;
-	}
+	}	
 }
 
 :global ResolveCNAMEtoAAAAFunc do={
-	:onerror err in={
-		:foreach ii in=[/ip dns cache find where (name~$i and type="AAAA")] do={
+	:foreach ii in=[/ip dns cache find where (name~$i and type="AAAA")] do={
+		:onerror err in={
 			:local IpVar [/ip dns cache get $ii data];
 			:local DnsNameVar [/ip dns cache get $ii name];
 			
@@ -62,9 +62,9 @@
 			#:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=AAAA");
 	
 			:return true;
+		} do={
+			:return false;
 		}
-	} do={
-		:return false;
 	}
 }
 
