@@ -10,8 +10,6 @@
 
 /system ntp server set enabled=yes manycast=yes;
 
-/ip dhcp-client set ether1 use-peer-dns=no use-peer-ntp=no;
-
 /ip dhcp-server network set [ find gateway=192.168.88.1 ] dns-server=192.168.88.1 ntp-server=192.168.88.1;
 
 /queue type add kind=cake name=cake-download cake-overhead-scheme=ethernet,pppoe-ptm cake-diffserv=diffserv4;
