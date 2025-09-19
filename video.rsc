@@ -85,12 +85,12 @@
 		:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
 		#:log info "$IpVar";
 		
-		$ResolveCNAMEtoAFunc i=$IpVar
-		
-		$ResolveCNAMEtoAAAAFunc i=$IpVar
-		
 		:return true;
 	} do={
 		:return false;
 	}
+	
+	$ResolveCNAMEtoAFunc i=$IpVar
+		
+	$ResolveCNAMEtoAAAAFunc i=$IpVar
 }
