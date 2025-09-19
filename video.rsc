@@ -80,11 +80,17 @@
 
 #CNAME to IPv4 and IPv6
 :foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="CNAME")] do={
-    :local IpVar [/ip dns cache get $i data];
-	:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
-	#:log info "$IpVar";
-	
-	$ResolveCNAMEtoAFunc i=$IpVar
-	
-	$ResolveCNAMEtoAAAAFunc i=$IpVar
+	:onerror err in={
+		:local IpVar [/ip dns cache get $i data];
+		:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
+		#:log info "$IpVar";
+		
+		$ResolveCNAMEtoAFunc i=$IpVar
+		
+		$ResolveCNAMEtoAAAAFunc i=$IpVar
+		
+		:return true;
+	} do={
+		:return false;
+	}
 }
