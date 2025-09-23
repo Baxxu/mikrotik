@@ -80,17 +80,50 @@
 
 #CNAME to IPv4 and IPv6
 :foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="CNAME")] do={
-	:onerror err in={
+	:onerror ok in={
 		:local IpVar [/ip dns cache get $i data];
 		:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
 		#:log info "$IpVar";
+		
+		$ResolveCNAMEtoAFunc i=$IpVar;
+		
+		$ResolveCNAMEtoAAAAFunc i=$IpVar;
+		
+		#for twitch :)
+		:foreach i in=[/ip dns cache find where (name=$IpVar and type="CNAME")] do={
+			:onerror ok in={
+				:local IpVar [/ip dns cache get $i data];
+				:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
+				#:log info "$IpVar";
+				
+				$ResolveCNAMEtoAFunc i=$IpVar;
+				
+				$ResolveCNAMEtoAAAAFunc i=$IpVar;
+				
+				:foreach i in=[/ip dns cache find where (name=$IpVar and type="CNAME")] do={
+					:onerror ok in={
+						:local IpVar [/ip dns cache get $i data];
+						:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
+						#:log info "$IpVar";
+						
+						$ResolveCNAMEtoAFunc i=$IpVar;
+						
+						$ResolveCNAMEtoAAAAFunc i=$IpVar;
+						
+						:return true;
+					} do={
+						:return false;
+					}
+				}
+				
+				:return true;
+			} do={
+				:return false;
+			}
+		}
 		
 		:return true;
 	} do={
 		:return false;
 	}
-	
-	$ResolveCNAMEtoAFunc i=$IpVar
-		
-	$ResolveCNAMEtoAAAAFunc i=$IpVar
 }
