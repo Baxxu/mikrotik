@@ -69,17 +69,17 @@
 }
 
 #IPv4
-:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="A")] do={
+:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="A")] do={
     $AddIpv4Func i=$i;
 }
 
 #IPv6
-:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="AAAA")] do={
+:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="AAAA")] do={
     $AddIpv6Func i=$i;
 }
 
 #CNAME to IPv4 and IPv6
-:foreach i in=[/ip dns cache find where ((name~"video" or name~".hls.ttvnw.net") and type="CNAME")] do={
+:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="CNAME")] do={
 	:onerror err in={
 		:local IpVar [/ip dns cache get $i data];
 		:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
