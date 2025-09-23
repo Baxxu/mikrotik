@@ -31,7 +31,7 @@
 }
 
 :global ResolveCNAMEtoAFunc do={
-	:foreach ii in=[/ip dns cache find where (name~$i and type="A")] do={
+	:foreach ii in=[/ip dns cache find where (name=$i and type="A")] do={
 		:onerror err in={
 			:local IpVar [/ip dns cache get $ii data];
 			:local DnsNameVar [/ip dns cache get $ii name];
@@ -50,7 +50,7 @@
 }
 
 :global ResolveCNAMEtoAAAAFunc do={
-	:foreach ii in=[/ip dns cache find where (name~$i and type="AAAA")] do={
+	:foreach ii in=[/ip dns cache find where (name=$i and type="AAAA")] do={
 		:onerror err in={
 			:local IpVar [/ip dns cache get $ii data];
 			:local DnsNameVar [/ip dns cache get $ii name];
