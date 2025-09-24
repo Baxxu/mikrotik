@@ -1,129 +1,114 @@
 :global AddIpv4Func do={
-	:onerror err in={
-		:local IpVar [/ip dns cache get $i data];
-	
-		:local DnsNameVar [/ip dns cache get $i name];
+    :local myRecord $record;
 
-        /ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
+    :onerror err in={
+		:local ip [/ip dns cache get $myRecord data];
+		
+		:local name [/ip dns cache get $myRecord name];
 
-        #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=A");
+		/ip firewall address-list add address=$ip comment=$name list=video timeout=30d;
 
-        :return true;
-    } do={
-        :return false;
-    }
+        #:log info ("AddIpv4Func. ip=$ip, name=$name");
+    } do={}
 }
 
 :global AddIpv6Func do={
+    :local myRecord $record;
+
     :onerror err in={
-		:local IpVar [/ip dns cache get $i data];
+		:local ip [/ip dns cache get $myRecord data];
 
-		:local DnsNameVar [/ip dns cache get $i name];
-	
-        /ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
-
-        #:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=AAAA");
-
-        :return true;
-    } do={
-        :return false;
-    }
+		:local name [/ip dns cache get $myRecord name];
+		
+		/ipv6 firewall address-list add address=$ip comment=$name list=video timeout=30d;
+    } do={}
 }
 
 :global ResolveCNAMEtoAFunc do={
-	:foreach ii in=[/ip dns cache find where (name=$i and type="A")] do={
-		:onerror err in={
-			:local IpVar [/ip dns cache get $ii data];
-			:local DnsNameVar [/ip dns cache get $ii name];
-			
-			#:log info "$IpVar $DnsNameVar";
-		
-			/ip firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
-	
-			#:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=A");
-	
-			:return true;
-		} do={
-			:return false;
-		}
-	}	
+    :local myName $name;
+
+    :global AddIpv4Func;
+
+    :foreach rec in=[/ip dns cache find where (name=$myName and type="A")] do={
+        $AddIpv4Func record=$rec;
+    }
 }
 
 :global ResolveCNAMEtoAAAAFunc do={
-	:foreach ii in=[/ip dns cache find where (name=$i and type="AAAA")] do={
-		:onerror err in={
-			:local IpVar [/ip dns cache get $ii data];
-			:local DnsNameVar [/ip dns cache get $ii name];
-			
-			#:log info "$IpVar $DnsNameVar";
+    :local myName $name;
+
+    :global AddIpv6Func;
+
+    :foreach rec in=[/ip dns cache find where (name=$myName and type="AAAA")] do={
+        $AddIpv6Func record=$rec;
+    }
+}
+
+:global ProcessCNAMEFunc do={
+    :local myRecord $record;
+
+    :global ResolveCNAMEtoAFunc;
+    :global ResolveCNAMEtoAAAAFunc;
+
+    :local currentName;
+
+    :local ok true;
+    :onerror err in={
+    	:set currentName [/ip dns cache get $myRecord data];
+
+        :set ok true;
+    } do={
+        :set ok false;
+    }
+
+    #:log info "ok $ok";
+
+    if (!ok) do={
+        :return;
+    }
+
+    :local maxDepth 5;
+    :local currentDepth 0;
+
+    :while ($currentDepth < $maxDepth) do={
+        :onerror err in={
+			:if ([:len $currentName] > 0 and [:pick $currentName ([:len $currentName]-1)] = ".") do={
+				:set currentName [:pick $currentName 0 ([:len $currentName]-1)];
+			}
+
+			#:log info ("ProcessCNAMEFunc. level=$currentDepth, name=$currentName");
+
+			$ResolveCNAMEtoAFunc name=$currentName;
+            # Turned off
+			#$ResolveCNAMEtoAAAAFunc name=$currentName;
+
+			:local nextCname [/ip dns cache find where (name=$currentName and type="CNAME")];
+			:if ([:len $nextCname] = 0) do={
+				:error;
+			}
+
+			:set currentName [/ip dns cache get [ :pick $nextCname 0 ] data];
+			:set currentDepth ($currentDepth + 1);
 		
-			/ipv6 firewall address-list add address=$IpVar comment=$DnsNameVar list=video timeout=30d;
-	
-			#:log info ("video script. Added entry: DnsName=$DnsNameVar Ip=$IpVar DnsType=AAAA");
-	
-			:return true;
-		} do={
-			:return false;
-		}
-	}
+        	:return true;
+        } do={
+            :return false;
+        }
+    }
 }
 
 #IPv4
-:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="A")] do={
-    $AddIpv4Func i=$i;
+:foreach rec in=[/ip dns cache find where ((name~"video" or name~"hls") and type="A")] do={
+    $AddIpv4Func record=$rec;
 }
 
 #IPv6
-:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="AAAA")] do={
-    $AddIpv6Func i=$i;
-}
+# Turned off
+#:foreach rec in=[/ip dns cache find where ((name~"video" or name~"hls") and type="AAAA")] do={
+    #$AddIpv6Func record=$rec;
+#}
 
 #CNAME to IPv4 and IPv6
-:foreach i in=[/ip dns cache find where ((name~"video" or name~"hls") and type="CNAME")] do={
-	:onerror ok in={
-		:local IpVar [/ip dns cache get $i data];
-		:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
-		#:log info "$IpVar";
-		
-		$ResolveCNAMEtoAFunc i=$IpVar;
-		
-		$ResolveCNAMEtoAAAAFunc i=$IpVar;
-		
-		#for twitch :)
-		:foreach i in=[/ip dns cache find where (name=$IpVar and type="CNAME")] do={
-			:onerror ok in={
-				:local IpVar [/ip dns cache get $i data];
-				:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
-				#:log info "$IpVar";
-				
-				$ResolveCNAMEtoAFunc i=$IpVar;
-				
-				$ResolveCNAMEtoAAAAFunc i=$IpVar;
-				
-				:foreach i in=[/ip dns cache find where (name=$IpVar and type="CNAME")] do={
-					:onerror ok in={
-						:local IpVar [/ip dns cache get $i data];
-						:set IpVar [:pick $IpVar 0 ([:len $IpVar]-1)];
-						#:log info "$IpVar";
-						
-						$ResolveCNAMEtoAFunc i=$IpVar;
-						
-						$ResolveCNAMEtoAAAAFunc i=$IpVar;
-						
-						:return true;
-					} do={
-						:return false;
-					}
-				}
-				
-				:return true;
-			} do={
-				:return false;
-			}
-		}
-		
-		:return true;
-	} do={
-		:return false;
-	}
+:foreach rec in=[/ip dns cache find where ((name~"video" or name~"hls") and type="CNAME")] do={
+    $ProcessCNAMEFunc record=$rec;
 }
