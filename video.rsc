@@ -52,10 +52,9 @@
 
     :local currentName;
 
-    :local ok true;
+    :local ok false;
     :onerror err in={
-    	:set currentName [/ip dns cache get $myRecord data];
-
+        :set currentName [/ip dns cache get $myRecord data];
         :set ok true;
     } do={
         :set ok false;
@@ -64,7 +63,7 @@
     #:log info "ok $ok";
 
     if (!ok) do={
-        :return;
+        :return false;
     }
 
     :local maxDepth 5;
