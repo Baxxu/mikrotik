@@ -89,10 +89,8 @@
 
 			:set currentName [/ip dns cache get [ :pick $nextCname 0 ] data];
 			:set currentDepth ($currentDepth + 1);
-		
-        	:return true;
         } do={
-            :return false;
+            :set currentDepth ($currentDepth + 1);
         }
     }
 }
