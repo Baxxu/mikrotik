@@ -69,8 +69,8 @@
     :local maxDepth 5;
     :local currentDepth 0;
 
-    :while ($currentDepth < $maxDepth) do={
-        :onerror err in={
+    :onerror err in={
+        :while ($currentDepth < $maxDepth) do={
 			:if ([:len $currentName] > 0 and [:pick $currentName ([:len $currentName]-1)] = ".") do={
 				:set currentName [:pick $currentName 0 ([:len $currentName]-1)];
 			}
@@ -88,9 +88,8 @@
 
 			:set currentName [/ip dns cache get [ :pick $nextCname 0 ] data];
 			:set currentDepth ($currentDepth + 1);
-        } do={
-            :set currentDepth ($currentDepth + 1);
         }
+    } do={
     }
 }
 
